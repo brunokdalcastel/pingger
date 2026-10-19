@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Guia do Pingger</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: cabeçalho compacto + barra de abas rolável; cada aba é um painel em duas colunas (explicação | exemplo). */
+:root {
+  --bg: #f3f5f8; --surface: #ffffff; --sunken: #e9edf2; --fg: #18202b; --muted: #5d6878; --line: #d5dbe3;
+  --accent: #1f6fd1; --accent-soft: #dce9fa; --on-accent: #ffffff;
+  --good: #1e9a52; --warn: #b88400; --bad: #cf3434; --route: #7d47c9;
+  --font-display: "Schibsted Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161c; --surface: #1a2029; --sunken: #232a35; --fg: #e4e9f0; --muted: #96a1b2; --line: #2f3845;
+    --accent: #5ea2f2; --accent-soft: #1f3550; --on-accent: #0d1420;
+    --good: #43c47b; --warn: #e6b73c; --bad: #f06464; --route: #b48af0; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12161c; --surface: #1a2029; --sunken: #232a35; --fg: #e4e9f0; --muted: #96a1b2; --line: #2f3845;
+  --accent: #5ea2f2; --accent-soft: #1f3550; --on-accent: #0d1420;
+  --good: #43c47b; --warn: #e6b73c; --bad: #f06464; --route: #b48af0; color-scheme: dark;
+}
+* { box-sizing: border-box; } [hidden] { display: none !important; }
+body { background: var(--bg); color: var(--fg); font: 17px/1.55 var(--font-body); margin: 0; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header.top { padding-block: 28px 18px; }
+.brand { display: flex; align-items: center; gap: 10px; font: 800 30px/1.1 var(--font-display); letter-spacing: -.01em; }
+.brand svg { width: 34px; height: 34px; flex: none; }
+.lede { color: var(--muted); max-width: 68ch; margin: 8px 0 0; text-wrap: pretty; }
+
+nav.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.tablist { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: thin; padding-block: 8px; }
+.tablist button { font: 600 15px var(--font-body); color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 8px; padding: 7px 13px; cursor: pointer; white-space: nowrap; }
+.tablist button:hover { color: var(--fg); background: var(--sunken); }
+.tablist button[aria-selected="true"] { color: var(--on-accent); background: var(--accent); }
+.tablist button:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+main { padding-block: 26px 60px; }
+section.panel { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+section.panel > * { min-width: 0; }
+h2 { font: 700 27px/1.2 var(--font-display); margin: 0 0 6px; text-wrap: balance; }
+h3 { font: 700 18px/1.3 var(--font-display); margin: 22px 0 6px; }
+.eyebrow { font: 600 12px var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--accent); }
+p { margin: 0 0 10px; max-width: 66ch; }
+ol.steps { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
+ol.steps li::marker { font: 600 14px var(--font-mono); color: var(--accent); }
+ul.plain { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+kbd, code { font: 14px var(--font-mono); background: var(--sunken); border: 1px solid var(--line); border-radius: 5px; padding: 0 5px; }
+.ui { font-weight: 600; color: var(--fg); border-bottom: 2px solid var(--accent-soft); }
+.note { border-left: 3px solid var(--warn); background: var(--sunken); padding: 9px 13px; border-radius: 0 8px 8px 0; font-size: 15px; margin-top: 14px; }
+
+.example { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 12px; }
+.example .tag { display: inline-flex; align-items: center; gap: 6px; font: 600 12px var(--font-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.example .tag::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.example h4 { font: 700 17px var(--font-display); margin: 0; }
+.scroll { overflow-x: auto; }
+table.hops { border-collapse: collapse; width: 100%; font: 13px var(--font-mono); font-variant-numeric: tabular-nums; }
+table.hops th { font-weight: 600; color: var(--muted); text-align: right; padding: 4px 7px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.hops td { text-align: right; padding: 4px 7px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.hops .l { text-align: left; }
+table.hops tbody tr { cursor: pointer; }
+table.hops tbody tr:hover td, table.hops tbody tr.sel td { background: var(--accent-soft); }
+.lossbad { color: var(--bad); font-weight: 600; }
+.lat-good { color: var(--good); } .lat-warn { color: var(--warn); } .lat-bad { color: var(--bad); }
+.explain { font-size: 15px; background: var(--sunken); border-radius: 8px; padding: 10px 12px; min-height: 64px; }
+canvas.tl { width: 100%; height: 150px; display: block; border-radius: 8px; background: var(--sunken); }
+pre.code { margin: 0; font: 12.5px/1.5 var(--font-mono); background: var(--sunken); border-radius: 8px; padding: 10px 12px; overflow-x: auto; white-space: pre; }
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; font-size: 15px; }
+.kv dt { color: var(--muted); } .kv dd { margin: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: 600 12px var(--font-mono); padding: 3px 9px; border-radius: 99px; border: 1px solid var(--line); background: var(--sunken); }
+.chip.on { border-color: var(--bad); color: var(--bad); }
+.chip.ok { border-color: var(--good); color: var(--good); }
+.flow { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; }
+.flow .box { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--sunken); font-size: 14px; }
+.flow .box b { display: block; font-family: var(--font-display); }
+.flow .arrow { font: 700 20px var(--font-mono); color: var(--accent); }
+.calc { display: grid; gap: 10px; }
+.calc label { display: grid; grid-template-columns: 120px 1fr 74px; gap: 10px; align-items: center; font-size: 15px; }
+.calc output { font: 600 14px var(--font-mono); text-align: right; }
+.calc input[type=range] { width: 100%; accent-color: var(--accent); }
+.mos { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.mos .big { font: 800 44px/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.mos .verdict { font-weight: 600; }
+.bar { height: 10px; border-radius: 99px; background: linear-gradient(90deg, var(--bad), var(--warn) 50%, var(--good)); position: relative; }
+.bar i { position: absolute; top: -4px; width: 4px; height: 18px; border-radius: 2px; background: var(--fg); transform: translateX(-2px); transition: left .2s; }
+.scale-labels { position: relative; height: 16px; margin-top: 4px; font: 11px var(--font-mono); color: var(--muted); }
+.scale-labels span { position: absolute; transform: translateX(-50%); }
+.scale-labels span:first-child { transform: none; } .scale-labels span:last-child { transform: translateX(-100%); }
+.pager { display: flex; justify-content: space-between; gap: 12px; margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--line); grid-column: 1 / -1; }
+.pager button { font: 600 15px var(--font-body); background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+.pager button:hover { border-color: var(--accent); }
+.pager button[hidden] { display: none !important; }
+footer { color: var(--muted); font-size: 14px; padding-block: 0 40px; }
+
+@media (max-width: 860px) {
+  section.panel { grid-template-columns: 1fr; gap: 20px; }
+  .calc label { grid-template-columns: 1fr 64px; }
+  .calc label span:first-child { grid-column: 1 / -1; }
+  .flow { grid-template-columns: 1fr; } .flow .arrow { transform: rotate(90deg); justify-self: center; }
+}
+@media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" aria-hidden="true"><path d="M2 18 L7 12 L11 15 L16 6 L22 10" stroke="var(--accent)"/><circle cx="16" cy="6" r="2.2" fill="var(--accent)" stroke="none"/></svg>
+      Guia do Pingger
+    </div>
+    <p class="lede">Como usar cada função do Pingger, o traceroute contínuo que mostra onde a sua conexão perde pacotes ou fica lenta. Cada aba explica uma parte do programa e traz um exemplo do que dá para descobrir com ela.</p>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Seções do guia">
+  <div class="wrap"><div class="tablist" role="tablist" id="tablist"></div></div>
+</nav>
+
+<main class="wrap" id="panels">
+
+<!-- ================================================================ COMEÇAR -->
+<section class="panel" id="comecar" data-label="Começar" role="tabpanel">
+  <div>
+    <div class="eyebrow">Primeiros passos</div>
+    <h2>Abrir o programa e fazer o primeiro trace</h2>
+    <p>O Pingger roda no seu computador e mostra a interface numa janela do Edge. Ele envia pacotes para cada roteador entre você e o destino, várias vezes por minuto, e guarda o histórico.</p>
+    <h3>Passo a passo</h3>
+    <ol class="steps">
+      <li>Dê dois cliques em <code>Pingger.pyw</code>, na pasta <code>C:\Users\Usuario\Pingger</code>.</li>
+      <li>No campo <span class="ui">Alvo</span>, no topo, digite um nome ou IP. Exemplos: <code>8.8.8.8</code>, <code>google.com</code>, o servidor do seu jogo.</li>
+      <li>Escolha o <span class="ui">Intervalo</span> entre amostras. 2,5 s é um bom padrão; use 1 s para jogos e voz.</li>
+      <li>Escolha <span class="ui">Rota completa</span> para ver todos os roteadores, ou <span class="ui">Só destino</span> para medir apenas o final.</li>
+      <li>Clique em <span class="ui">▶ Tracear</span> ou aperte <kbd>Enter</kbd>. A primeira amostra aparece em cerca de 3 segundos.</li>
+    </ol>
+    <p class="note">Fechar a janela não para o Pingger: ele continua coletando em segundo plano. Abrir de novo só reabre a janela. Para encerrar de vez, finalize o <code>pythonw.exe</code> no Gerenciador de Tarefas.</p>
+  </div>
+  <div class="example">
+    <span class="tag">Exemplo</span>
+    <h4>“A internet cai à noite.” Por onde começar</h4>
+    <p>Abra um trace para <code>8.8.8.8</code> com intervalo de 2,5 s e deixe rodando. No dia seguinte, volte a timeline para o horário da queda e veja em qual hop a perda começou.</p>
+    <div class="flow">
+      <div class="box"><b>Você digita</b>8.8.8.8 · 2,5 s · Rota completa</div>
+      <div class="arrow">→</div>
+      <div class="box"><b>O Pingger mostra</b>13 hops, latência de cada um, perda, jitter e MOS, atualizando sozinho</div>
+    </div>
+    <p style="margin:0;font-size:15px;color:var(--muted)">Vários alvos de uma vez também funcionam: <code>8.8.8.8 1.1.1.1 google.com</code> abre três traces.</p>
+  </div>
+</section>
+
+<!-- ================================================================ GRADE -->
+<section class="panel" id="grade" data-label="Grade de hops" role="tabpanel" hidden>
+  <div>
+    <div class="eyebrow">Tela principal</div>
+    <h2>Ler a grade de hops</h2>
+    <p>Cada linha é um roteador no caminho até o destino, na ordem em que o pacote passa por eles. A última linha é o destino.</p>
+    <dl class="kv">
+      <dt>Hop</dt><dd>Posição do roteador no caminho (1 = o seu roteador)</dd>
+      <dt>Cont.</dt><dd>Quantas amostras entram na estatística</dd>
+      <dt>IP / Nome</dt><dd>Endereço e nome (DNS reverso) do roteador</dd>
+      <dt>Média, Mín, Atual, Máx</dt><dd>Tempo de ida e volta, em milissegundos</dd>
+      <dt>Perda %</dt><dd>Amostras sem resposta. Fica vermelho acima de zero</dd>
+      <dt>Jitter</dt><dd>Quanto a latência varia de uma amostra para a outra</dd>
+      <dt>MOS</dt><dd>Nota de qualidade para voz, de 1 a 4,5</dd>
+    </dl>
+    <h3>O gráfico à direita</h3>
+    <ul class="plain">
+      <li>A <b>bolinha</b> é a média, colorida por faixa: verde, amarela a partir de 100 ms, vermelha a partir de 200 ms.</li>
+      <li>A <b>barra cinza</b> vai do mínimo ao máximo. O <b>tracinho</b> é o valor atual.</li>
+      <li>A <b>linha vermelha</b> embaixo do hop mostra a perda.</li>
+    </ul>
+    <h3>Ações na grade</h3>
+    <ul class="plain">
+      <li><b>Clique</b> numa linha para fixar a timeline daquele hop.</li>
+      <li><b>Botão direito</b> abre o menu do hop: copiar IP ou nome, whois, DNS, tracear só esse hop, abrir um alvo novo com esse IP e criar um alerta para ele.</li>
+      <li><span class="ui">Escala</span> fixa o eixo em ms quando uma linha ruim deixa o gráfico ilegível.</li>
+    </ul>
+  </div>
+  <div class="example">
+    <span class="tag">Exemplo · clique nas linhas</span>
+    <h4>Trace real até 8.8.8.8 (recorte)</h4>
+    <div class="scroll">
+      <table class="hops" id="demoHops">
+        <thead><tr><th>Hop</th><th class="l">IP</th><th>Média</th><th>Máx</th><th>Perda %</th><th>Jitter</th><th>MOS</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="explain" id="hopExplain" aria-live="polite">Clique numa linha para ver como interpretá-la.</div>
+  </div>
+</section>
+
+<!-- ================================================================ TIMELINE -->
+<section class="panel" id="timeline" data-label="Linha do tempo" role="tabpanel" hidden>
+  <div>
+    <div class="eyebrow">Histórico</div>
+    <h2>Navegar no tempo e focar um período</h2>
+    <p>Abaixo da grade fica a linha do tempo do destino. Cada barra vertical é um trecho de tempo: a altura é a latência média e a faixa clara atrás vai do mínimo ao máximo. Perda aparece como barra vermelha descendo do topo.</p>
+    <h3>Controles</h3>
+    <ul class="plain">
+      <li><span class="ui">Período</span>: de 1 minuto a 7 dias visíveis na tela.</li>
+      <li><span class="ui">◀ ▶</span> voltam e avançam meio período. <span class="ui">Agora</span> volta para o ao vivo.</li>
+      <li><b>Roda do mouse</b> sobre o gráfico muda o período. <kbd>Shift</kbd> + roda anda no tempo.</li>
+      <li><b>Arraste</b> sobre o gráfico para focar um trecho: a grade passa a mostrar só as estatísticas desse trecho. <b>Duplo-clique</b> desfaz o foco.</li>
+      <li><span class="ui">Jitter</span> liga um gráfico extra de variação, com uma linha-alvo tracejada.</li>
+      <li><span class="ui">Mudanças de rota</span> marca com linha roxa tracejada os momentos em que a rota mudou.</li>
+    </ul>
+    <p class="note">O selo ao lado dos controles diz o que a grade está mostrando: <b>Ao vivo</b>, <b>Foco</b> (trecho selecionado) ou <b>Histórico</b> (você voltou no tempo).</p>
+  </div>
+  <div class="example">
+    <span class="tag">Exemplo · arraste sobre o gráfico</span>
+    <h4>Pico de perda às 21h, com mudança de rota</h4>
+    <canvas class="tl" id="demoTl" aria-label="Linha do tempo de exemplo com pico de perda e uma mudança de rota"></canvas>
+    <div class="explain" id="tlExplain" aria-live="polite">Dados de exemplo. Arraste sobre o gráfico para focar um trecho e ver as estatísticas dele.</div>
+  </div>
+</section>
+
+<!-- ================================================================ PACOTES -->
+<section class="panel" id="pacotes" data-label="Tipos de pacote" role="tabpanel" hidden>
+  <div>
+    <div class="eyebrow">Opções do alvo</div>
+    <h2>ICMP, TCP, UDP ou agente remoto</h2>
+    <p>Em cada alvo, <span class="ui">⚙ Opções do alvo</span> define como as sondas são enviadas.</p>
+    <dl class="kv">
+      <dt>ICMP</dt><dd>O padrão. Mede todos os hops e não precisa de administrador.</dd>
+      <dt>TCP</dt><dd>Abre conexão numa porta (ex.: 443) e mede o handshake. Útil quando o destino bloqueia ping. Por enquanto mede só o destino.</dd>
+      <dt>UDP</dt><dd>Envia um datagrama para uma porta e conta a resposta. Também mede só o destino.</dd>
+      <dt>Agente remoto</dt><dd>Outro computador com Pingger faz as sondas e devolve os resultados. Veja a aba “Remoto”.</dd>
+    </dl>
+    <h3>Outras opções</h3>
+    <ul class="plain">
+      <li><b>O que tracear</b>: rota completa, só o destino ou um hop específico.</li>
+      <li><b>Tamanho do pacote</b> e <b>Não fragmentar (DF)</b>: pacotes grandes com DF ligado revelam problemas de MTU.</li>
+      <li><b>TOS/DSCP</b>: marca os pacotes como voz (184 = EF) para testar se a rede prioriza esse tráfego.</li>
+      <li><b>Timeout</b>, <b>Máx. de hops</b>, <b>versão do IP</b> (IPv4/IPv6) e <b>DNS reverso</b>.</li>
+      <li><b>Salvar dados</b>: desligado, a sessão fica só na memória.</li>
+    </ul>
+  </div>
+  <div class="example">
+    <span class="tag">Exemplo</span>
+    <h4>O site abre, mas o ping dá 100% de perda</h4>
+    <p>Alguns servidores bloqueiam ICMP. Troque o tipo para TCP na porta 443 e meça o tempo real de conexão.</p>
+    <div class="flow">
+      <div class="box"><b>ICMP</b>Destino: <span class="lossbad">100% de perda</span><br>Parece fora do ar</div>
+      <div class="arrow">→</div>
+      <div class="box"><b>TCP :443</b>Destino: <span class="lat-good">28 ms, 0% de perda</span><br>O servidor está bem</div>
+    </div>
+    <p style="margin:0;font-size:15px">Também há o preset pronto <span class="ui">TCP 443 (firewall bloqueia ICMP)</span> no seletor ao lado do campo de alvo.</p>
+  </div>
+</section>
+
+<!-- ================================================================ RESUMOS -->
+<section class="panel" id="resumos" data-label="Alvos e resumos" role="tabpanel" hidden>
+  <div>
+    <div class="eyebrow">Vários destinos</div>
+    <h2>Acompanhar vários alvos lado a lado</h2>
+    <p>Cada alvo aparece na barra lateral com uma bolinha de estado e a última latência. Bolinha vazia significa pausado.</p>
+    <h3>Resumos</h3>
+    <ol class="steps">
+      <li>Clique no <span class="ui">+</span> ao lado de <b>Resumos</b>, na barra lateral, e dê um nome.</li>
+      <li>Em <span class="ui">Membros…</span>, marque quais alvos entram no painel.</li>
+      <li>O resumo mostra o destino de cada alvo: média, mínimo, máximo, perda, jitter, MOS e uma mini linha do tempo. Clique numa linha para abrir o alvo.</li>
+    </ol>
+    <p>Alertas também podem adicionar ou remover um alvo de um resumo automaticamente. Assim, um resumo chamado “Problemas” lista só quem está com falha.</p>
+    <h3>Pausar e fechar</h3>
+    <p><span class="ui">⏸ Pausar</span> para a coleta sem perder dados. <span class="ui">Fechar</span> pergunta se você quer manter os dados no banco ou descartar.</p>
+  </div>
+  <div class="example">
+    <span class="tag">Exemplo</span>
+    <h4>Resumo “Serviços da empresa”</h4>
+    <div class="scroll">
+      <table class="hops">
+        <thead><tr><th class="l">Alvo</th><th>Média</th><th>Perda %</th><th>MOS</th></tr></thead>
+        <tbody>
+          <tr><td class="l">8.8.8.8 (DNS Google)</td><td class="lat-good">29,4</td><td>0,0</td><td>4,39</td></tr>
+          <tr><td class="l">1.1.1.1 (DNS Cloudflare)</td><td class="lat-good">28,8</td><td class="lossbad">1,9</td><td>4,27</td></tr>
+          <tr><td class="l">vpn.empresa.com.br</td><td class="lat-warn">134,0</td><td>0,0</td><td>4,05</td></tr>
+          <tr><td class="l">pabx.empresa.com.br</td><td class="lat-bad">241,7</td><td class="lossbad">6,3</td><td>2,81</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin:0;font-size:15px">Num relance: o DNS está bem, a VPN está lenta e o PABX ruim para ligações (MOS abaixo de 3,5). Valores ilustrativos.</p>
+  </div>
+</section>
+
+<!-- ================================================================ WORKSPACES -->
+<section class="panel" id="workspaces" data-label="Workspaces" role="tabpanel" hidden>
+  <div>
+    <div class="eyebrow">Organização</div>
+    <h2>Guardar conjuntos de alvos</h2>
+    <p>Um workspace é um conjunto nomeado de alvos e resumos. Use um para casa, outro para o escritório, outro para um cliente.</p>
+    <ul class="plain">
+      <li><span class="ui">+ Novo workspace…</span> salva o atual e começa um vazio.</li>
+      <li><span class="ui">Salvar como…</span> grava o conjunto atual com outro nome.</li>
+      <li>Escolher um nome na lista salva o workspace atual e abre o escolhido, retomando os traces que estavam ativos.</li>
+      <li><span class="ui">Gerenciar…</span> lista os workspaces e permite excluir.</li>
+    </ul>
+    <h3>Configurações nomeadas (presets)</h3>
+    <p>O seletor ao lado do campo de alvo aplica um conjunto de opções ao criar o trace. Vêm três prontos, e você pode criar os seus em <b>Configurações → Configurações nomeadas</b>.</p>
+  </div>
+  <div class="example">
+    <span class="tag">Exemplo</span>
+    <h4>Preset para monitorar o servidor do jogo</h4>
+    <pre class="code">{
+  "Jogo (1s, rota completa)": {
+    "interval": 1,
+    "mode": "full",
+    "packet_size": 64
+  },
+  "VoIP marcado como voz": {
+    "interval": 1,
+    "tos": 184
+  }
+}</pre>
+    <p style="margin:0;font-size:15px">Depois de salvar, escolha <b>Jogo (1s, rota completa)</b> no seletor e trace o IP do servidor.</p>
+  </div>
+</section>
+
+<!-- ================================================================ ALERTAS -->
+<section class="panel" id="alertas" data-label="Alertas" role="tabpanel" hidden>
+  <div>
+    <div class="eyebrow">Monitoramento</div>
+    <h2>Ser avisado quando a conexão piorar</h2>
+    <p>Um alerta tem uma <b>condição</b> (o que observar), <b>ações</b> (o que fazer) e os <b>alvos</b> em que ele vale. Abra em <span class="ui">🔔 Alertas → + Novo alerta</span>.</p>
+    <h3>Condições</h3>
+    <ul class="plain">
+      <li>Latência acima de X ms ou perda em N de M amostras</li>
+      <li>Perda média, latência média ou jitter acima de um valor numa janela de tempo</li>
+      <li>MOS médio abaixo de um valor</li>
+      <li>Destino sem resposta por N amostras seguidas</li>
+      <li>Mudança de rota</li>
+    </ul>
+    <p>O campo <b>Hop observado</b> aceita <code>final</code> (o destino) ou o número de um hop.</p>
+    <h3>Ações</h3>
+    <div class="chips">
+      <span class="chip">Som</span><span class="chip">Notificação</span><span class="chip">E-mail</span><span class="chip">Arquivo de log</span>
+      <span class="chip">Executar programa</span><span class="chip">Webhook REST</span><span class="chip">Salvar .pgr</span>
+      <span class="chip">Adicionar ao resumo</span><span class="chip">Remover do resumo</span><span class="chip">Mudar modo do trace</span>
+    </div>
+    <p style="margin-top:10px">Os textos aceitam variáveis: <code>$host $ip $alertname $state $reason $time $latency $loss $jitter $mos $route</code>.</p>
+    <h3>Quando avisar</h3>
+    <p>Quando a condição começa, termina, ambos ou enquanto durar, com repetição opcional a cada X segundos. <span class="ui">Testar</span> dispara as ações na hora. Com um alerta ativo, o ícone da janela fica vermelho.</p>
+    <p class="note">“Executar programa” vem desligado por segurança. Ative em Configurações → Segurança. E-mail precisa do SMTP configurado.</p>
+  </div>
+  <div class="example">
+    <span class="tag">Exemplo · simule</span>
+    <h4>“Me avise se o PABX ficar ruim para ligações”</h4>
+    <dl class="kv">
+      <dt>Condição</dt><dd>Latência acima de <b>150 ms</b> ou perda em <b>5 de 10</b> amostras</dd>
+      <dt>Hop</dt><dd><code>final</code></dd>
+      <dt>Ações</dt><dd>Notificação + e-mail + adicionar ao resumo “Problemas”</dd>
+      <dt>Quando</dt><dd>Começa e termina</dd>
+    </dl>
+    <div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:6px">Últimas 10 amostras (clique para alternar entre ok e ruim):</div>
+      <div class="chips" id="alertSamples"></div>
+    </div>
+    <div class="explain" id="alertExplain" aria-live="polite"></div>
+    <pre class="code" id="alertMail"></pre>
+  </div>
+</section>
+
+<!-- ================================================================ DADOS -->
+<section class="panel" id="dados" data-label="Dados e exportação" role="tabpanel" hidden>
+  <div>
+    <div class="eyebrow">Arquivos</div>
+    <h2>Guardar, exportar e reabrir</h2>
+    <p>Tudo é gravado num banco SQLite em <code>%LOCALAPPDATA%\Pingger</code>. O histórico fica guardado por 30 dias; o prazo muda em Configurações.</p>
+    <h3>Botão “Exportar ▾” de cada alvo</h3>
+    <ul class="plain">
+      <li><b>CSV longo</b>: uma linha por hop e por amostra. Bom para tabelas dinâmicas.</li>
+      <li><b>CSV largo</b>: uma linha por amostra, uma coluna por hop. Bom para gráficos no Excel.</li>
+      <li><b>Sessão .pgr</b>: o trace inteiro num arquivo, para mandar a outra pessoa abrir no Pingger dela.</li>
+      <li><b>Copiar estatísticas como texto</b>, <b>Copiar como imagem</b> e <b>Salvar imagem (PNG)</b>, prontos para colar num chamado.</li>
+      <li><b>Zerar dados</b> apaga as amostras daquele alvo.</li>
+    </ul>
+    <p>Se houver um foco selecionado na timeline, a exportação usa só aquele trecho.</p>
+    <h3>Menu “Arquivo ▾”</h3>
+    <ul class="plain">
+      <li>Importar sessão (.pgr), importar e exportar lista de alvos (um por linha).</li>
+      <li><b>Sessões salvas</b>: abre o histórico de um trace antigo ou retoma a coleta.</li>
+    </ul>
+    <p>Em Configurações há ainda a <b>exportação automática</b>, que grava CSV ou .pgr numa pasta a cada X minutos.</p>
+  </div>
+  <div class="example">
+    <span class="tag">Exemplo</span>
+    <h4>CSV largo aberto no Excel</h4>
+    <pre class="code">timestamp,datetime,hop1 172.16.2.254,hop2 192.168.20.1,…,hop13 8.8.8.8
+1792150647.715,2026-10-16 08:37:27,3.0,3.0,…,28.6
+1792150650.215,2026-10-16 08:37:30,2.0,4.0,…,30.1
+1792150652.715,2026-10-16 08:37:32,3.0,*,…,29.0</pre>
+    <p style="margin:0;font-size:15px">O asterisco (<code>*</code>) marca uma amostra perdida. Para reclamar com a operadora, foque o horário do problema, use <b>Salvar imagem</b> e anexe o PNG junto com o CSV.</p>
+  </div>
+</section>
+
+<!-- ================================================================ FERRAMENTAS -->
+<section class="panel" id="ferramentas" data-label="Ferramentas" role="tabpanel" hidden>
+  <div>
+    <div class="eyebrow">Investigação</div>
+    <h2>Descobrir de quem é cada roteador</h2>
+    <ul class="plain">
+      <li><b>Whois / bloco IP</b>: consulta o registro público (RDAP) e mostra o nome da rede, a faixa de IPs, o país e os contatos, inclusive o de abuso.</li>
+      <li><b>Consulta DNS</b>: lista os endereços de um nome e o nome reverso de um IP.</li>
+    </ul>
+    <p>Abra pelo menu <span class="ui">Ferramentas ▾</span> ou clicando com o botão direito num hop da grade.</p>
+    <h3>Tema</h3>
+    <p>Em <span class="ui">Ferramentas ▾</span> você escolhe tema claro, escuro ou o do sistema.</p>
+  </div>
+  <div class="example">
+    <span class="tag">Exemplo</span>
+    <h4>Whois do hop 10 (142.250.166.20)</h4>
+    <dl class="kv">
+      <dt>Rede</dt><dd>GOOGLE</dd>
+      <dt>Faixa</dt><dd>142.250.0.0 – 142.251.255.255</dd>
+      <dt>Tipo</dt><dd>DIRECT ALLOCATION</dd>
+      <dt>Fonte</dt><dd>whois.arin.net</dd>
+    </dl>
+    <p style="margin:0;font-size:15px">Conclusão: a partir do hop 10 o tráfego já está na rede do Google. Se a perda começa antes dele, o problema está no seu provedor ou na interconexão. Dados ilustrativos.</p>
+  </div>
+</section>
+
+<!-- ================================================================ REMOTO -->
+<section class="panel" id="remoto" data-label="Remoto" role="tabpanel" hidden>
+  <div>
+    <div class="eyebrow">Outras máquinas</div>
+    <h2>Painel pela rede e agente remoto</h2>
+    <h3>Ver o painel de outro computador</h3>
+    <ol class="steps">
+      <li>Em Configurações → <b>Servidor web</b>, mude <span class="ui">Escutar em</span> para “Toda a rede” e defina uma senha.</li>
+      <li>Reinicie o Pingger.</li>
+      <li>No outro computador ou no celular, abra <code>http://IP-DO-PC:7465</code> e entre com a senha.</li>
+    </ol>
+    <h3>Agente remoto</h3>
+    <p>Faz o trace <b>a partir de outra máquina</b>, mas com os gráficos no seu Pingger.</p>
+    <ol class="steps">
+      <li>Na máquina que vai sondar: ative <b>Agente remoto</b>, defina uma chave e libere a rede (passo acima).</li>
+      <li>No seu Pingger: crie o alvo, abra <span class="ui">⚙ Opções do alvo</span>, escolha <b>Via agente remoto</b> e preencha a URL e a chave do agente.</li>
+    </ol>
+    <p class="note">Sem senha, o painel recusa qualquer acesso que não venha do próprio computador. O agente recusa pedidos com chave errada.</p>
+  </div>
+  <div class="example">
+    <span class="tag">Exemplo</span>
+    <h4>O problema é na sua casa ou no servidor?</h4>
+    <div class="flow">
+      <div class="box"><b>Seu PC (casa)</b>Trace até o servidor: <span class="lossbad">8% de perda</span></div>
+      <div class="arrow">vs</div>
+      <div class="box"><b>Agente no escritório</b>Mesmo servidor: <span class="lat-good">0% de perda</span></div>
+    </div>
+    <p style="margin:0;font-size:15px">Se só a sua casa perde pacotes, o servidor está bem e o problema é a sua conexão. Valores ilustrativos.</p>
+  </div>
+</section>
+
+<!-- ================================================================ CONFIGURAÇÕES -->
+<section class="panel" id="configuracoes" data-label="Configurações" role="tabpanel" hidden>
+  <div>
+    <div class="eyebrow">Ajustes</div>
+    <h2>O que cada grupo de Configurações faz</h2>
+    <dl class="kv">
+      <dt>Exibição</dt><dd>Tema, faixas de cor (amarelo e vermelho), escala dos gráficos e da perda, linha-alvo do jitter, período padrão e quantas amostras entram nas estatísticas</dd>
+      <dt>Padrões</dt><dd>Opções usadas em todo alvo novo: intervalo, tipo de pacote, porta, tamanho, timeout, máx. de hops, DNS, salvar dados</dd>
+      <dt>Presets</dt><dd>As configurações nomeadas, em JSON</dd>
+      <dt>Dados</dt><dd>Dias de histórico e de quanto em quanto tempo gravar no banco</dd>
+      <dt>Exportação automática</dt><dd>Ativar, intervalo, formato e pasta</dd>
+      <dt>E-mail</dt><dd>Servidor SMTP, porta, segurança, usuário, senha, remetente e destinatário dos alertas</dd>
+      <dt>Servidor web</dt><dd>Porta, acesso pela rede e senha</dd>
+      <dt>Agente remoto</dt><dd>Permitir sondagens a partir desta máquina e a chave</dd>
+      <dt>Segurança</dt><dd>Liberar a ação “Executar programa” dos alertas</dd>
+    </dl>
+    <p class="note">Mudar a porta ou o “Escutar em” só vale depois de reiniciar o Pingger.</p>
+  </div>
+  <div class="example">
+    <span class="tag">Exemplo</span>
+    <h4>E-mail de alerta pelo Gmail</h4>
+    <dl class="kv">
+      <dt>Servidor</dt><dd><code>smtp.gmail.com</code></dd>
+      <dt>Porta</dt><dd><code>587</code></dd>
+      <dt>Segurança</dt><dd>STARTTLS</dd>
+      <dt>Usuário</dt><dd>seu endereço do Gmail</dd>
+      <dt>Senha</dt><dd>uma <b>senha de app</b> criada na sua conta Google, não a senha normal</dd>
+    </dl>
+    <p style="margin:0;font-size:15px">Depois de salvar, crie um alerta com a ação E-mail e clique em <span class="ui">Testar</span>.</p>
+  </div>
+</section>
+
+<!-- ================================================================ LINHA DE COMANDO -->
+<section class="panel" id="cli" data-label="Linha de comando" role="tabpanel" hidden>
+  <div>
+    <div class="eyebrow">Terminal</div>
+    <h2>Iniciar pelo terminal</h2>
+    <p>Na pasta <code>C:\Users\Usuario\Pingger</code>:</p>
+    <dl class="kv">
+      <dt><code>--trace A B</code></dt><dd>Começa a tracear os alvos A e B</dd>
+      <dt><code>--port N</code></dt><dd>Usa outra porta (padrão 7465)</dd>
+      <dt><code>--bind 0.0.0.0</code></dt><dd>Aceita conexões da rede</dd>
+      <dt><code>--data PASTA</code></dt><dd>Guarda o banco em outra pasta</dd>
+      <dt><code>--no-browser</code></dt><dd>Não abre a janela. Bom para usar como agente ou servidor</dd>
+    </dl>
+    <p>Rodar pelo terminal também mostra mensagens de erro que o <code>.pyw</code> esconde.</p>
+  </div>
+  <div class="example">
+    <span class="tag">Exemplo</span>
+    <h4>Agente silencioso num PC do escritório</h4>
+    <pre class="code">cd C:\Users\Usuario\Pingger
+python -m pingger --no-browser --bind 0.0.0.0</pre>
+    <h4>Abrir já monitorando três destinos</h4>
+    <pre class="code">python -m pingger --trace 8.8.8.8 1.1.1.1 google.com</pre>
+  </div>
+</section>
+
+<!-- ================================================================ GLOSSÁRIO -->
+<section class="panel" id="glossario" data-label="Latência, jitter e MOS" role="tabpanel" hidden>
+  <div>
+    <div class="eyebrow">Conceitos</div>
+    <h2>O que os números significam</h2>
+    <dl class="kv">
+      <dt>Latência</dt><dd>Tempo de ida e volta de um pacote, em ms. Até uns 50 ms é ótimo para jogos; até 150 ms ainda é aceitável para voz.</dd>
+      <dt>Perda</dt><dd>Pacotes que não voltaram. Acima de 1% já atrapalha chamadas e jogos.</dd>
+      <dt>Jitter</dt><dd>Variação da latência entre amostras seguidas. Jitter alto picota voz e vídeo, mesmo com média baixa.</dd>
+      <dt>MOS</dt><dd>Nota de 1 a 4,5 que junta latência, jitter e perda numa estimativa de qualidade de voz (modelo E simplificado, ITU-T G.107).</dd>
+    </dl>
+    <h3>Perda num hop do meio, mas não no destino</h3>
+    <p>Muitos roteadores dão baixa prioridade para responder sondas e “perdem” pacotes sem afetar o tráfego que passa por eles. Só se preocupe se a perda <b>continua até o destino</b>. No trace de exemplo, o hop 8 mostra 22% de perda e o destino 0%: esse roteador está bem.</p>
+    <h3>Hops com asterisco</h3>
+    <p>Roteadores que nunca respondem aparecem como <code>*</code> com 100% de perda. É normal se os hops seguintes respondem.</p>
+  </div>
+  <div class="example">
+    <span class="tag">Experimente</span>
+    <h4>Calculadora de MOS</h4>
+    <div class="calc">
+      <label><span>Latência média</span><input type="range" id="mLat" min="0" max="400" value="30"><output id="oLat">30 ms</output></label>
+      <label><span>Jitter</span><input type="range" id="mJit" min="0" max="100" value="3"><output id="oJit">3 ms</output></label>
+      <label><span>Perda</span><input type="range" id="mLoss" min="0" max="20" step="0.5" value="0"><output id="oLoss">0 %</output></label>
+    </div>
+    <div class="mos"><span class="big" id="mosVal">4,39</span><span class="verdict" id="mosVerdict"></span></div>
+    <div><div class="bar"><i id="mosMark"></i></div><div class="scale-labels"><span style="left:0">1,0</span><span style="left:42.86%">2,5</span><span style="left:71.43%">3,5</span><span style="left:100%">4,5</span></div></div>
+    <p style="margin:0;font-size:15px;color:var(--muted)">É a mesma fórmula da coluna MOS do Pingger.</p>
+  </div>
+</section>
+
+</main>
+<footer class="wrap">Guia do Pingger 1.0 · os exemplos marcados como ilustrativos usam valores inventados para mostrar o comportamento da ferramenta.</footer>
+
+<script>
+(function () {
+  // ---------------- abas
+  var panels = Array.prototype.slice.call(document.querySelectorAll('section.panel'));
+  var list = document.getElementById('tablist');
+  panels.forEach(function (p, i) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.role = 'tab'; b.id = 'tab-' + p.id; b.textContent = p.dataset.label;
+    b.setAttribute('aria-controls', p.id); b.setAttribute('aria-selected', 'false');
+    b.addEventListener('click', function () { show(p.id, true); });
+    list.appendChild(b);
+    p.setAttribute('aria-labelledby', b.id);
+    var pager = document.createElement('div'); pager.className = 'pager';
+    var prev = panels[i - 1], next = panels[i + 1];
+    var pb = document.createElement('button'); pb.type = 'button';
+    pb.textContent = prev ? '← ' + prev.dataset.label : ''; pb.hidden = !prev;
+    if (prev) pb.addEventListener('click', function () { show(prev.id, true); });
+    var nb = document.createElement('button'); nb.type = 'button';
+    nb.textContent = next ? next.dataset.label + ' →' : ''; nb.hidden = !next;
+    if (next) nb.addEventListener('click', function () { show(next.id, true); });
+    pager.appendChild(pb); pager.appendChild(nb); p.appendChild(pager);
+  });
+  list.addEventListener('keydown', function (e) {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    var i = panels.findIndex(function (p) { return !p.hidden; });
+    var n = (i + (e.key === 'ArrowRight' ? 1 : -1) + panels.length) % panels.length;
+    show(panels[n].id, true); document.getElementById('tab-' + panels[n].id).focus();
+  });
+  function show(id, remember) {
+    panels.forEach(function (p) {
+      var on = p.id === id; p.hidden = !on;
+      var b = document.getElementById('tab-' + p.id);
+      b.setAttribute('aria-selected', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1;
+      if (on) b.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    });
+    if (remember) { var nav = document.querySelector('nav.tabs'); if (nav.getBoundingClientRect().top <= 1) window.scrollTo(0, document.getElementById('panels').offsetTop - nav.offsetHeight); }
+    if (remember) { try { localStorage.setItem('pinggerGuideTab', id); } catch (e) {} try { history.replaceState(null, '', '#' + id); } catch (e) {} }
+    if (id === 'timeline' && cv) drawTl();
+  }
+  var start = (location.hash || '').slice(1);
+  if (!document.getElementById(start)) { try { start = localStorage.getItem('pinggerGuideTab') || ''; } catch (e) { start = ''; } }
+  show(document.getElementById(start) && document.getElementById(start).classList.contains('panel') ? start : panels[0].id, false);
+  try { history.scrollRestoration = 'manual'; } catch (e) {}
+  window.scrollTo(0, 0);
+  window.addEventListener('load', function () { window.scrollTo(0, 0); });
+
+  function tok(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  function latClass(v) { return v == null ? '' : v >= 200 ? 'lat-bad' : v >= 100 ? 'lat-warn' : 'lat-good'; }
+  function br(v, d) { return v == null ? '-' : Number(v).toFixed(d == null ? 1 : d).replace('.', ','); }
+
+  // ---------------- grade de exemplo (dados reais do trace de teste)
+  var hops = [
+    [1, '172.16.2.254', 3.6, 7.0, 0, 1.7, 4.40, 'Seu roteador ou o gateway da rede local. Latência baixa e sem perda: a rede dentro de casa está bem.'],
+    [2, '192.168.20.1', 4.6, 10.0, 0, 3.7, 4.40, 'Segundo equipamento local (outro roteador ou o modem). Ainda dentro da sua rede.'],
+    [3, '201.76.126.41', 4.0, 9.5, 0, 2.7, 4.40, 'Primeiro roteador do provedor de internet. O whois mostraria o nome da operadora.'],
+    [5, '*', null, null, 100, null, null, 'Asterisco com 100% de perda: este roteador não responde a sondas. É normal, porque os hops seguintes respondem.'],
+    [7, '172.21.0.126', 37.3, 71.5, 0, 18.9, 4.36, 'Salto grande de latência (de ~10 para ~37 ms) e jitter alto. Aqui o tráfego sai da sua cidade. Fique de olho se o destino também variar.'],
+    [8, '172.24.0.13', 33.8, 56.9, 22.2, 11.6, 1.87, '22% de perda neste hop, mas o destino tem 0%. O roteador só está ignorando parte das sondas. Não é problema real.'],
+    [10, '142.250.166.20', 30.6, 40.7, 0, 4.3, 4.38, 'Entrada na rede do Google (confirme com o whois). A latência volta a ficar estável.'],
+    [13, '8.8.8.8', 29.8, 39.0, 0, 4.8, 4.38, 'O destino (dns.google). É a linha que mais importa: 29,8 ms, sem perda e MOS 4,38. Conexão saudável.']
+  ];
+  var tb = document.querySelector('#demoHops tbody');
+  hops.forEach(function (h) {
+    var tr = document.createElement('tr'); tr.tabIndex = 0;
+    tr.innerHTML = '<td>' + h[0] + '</td><td class="l">' + h[1] + '</td><td class="' + latClass(h[2]) + '">' + br(h[2]) + '</td><td>' + br(h[3]) +
+      '</td><td class="' + (h[4] > 0 ? 'lossbad' : '') + '">' + br(h[4]) + '</td><td>' + br(h[5]) + '</td><td>' + br(h[6], 2) + '</td>';
+    function pick() {
+      tb.querySelectorAll('tr').forEach(function (r) { r.classList.remove('sel'); });
+      tr.classList.add('sel');
+      document.getElementById('hopExplain').innerHTML = '<b>Hop ' + h[0] + ' · ' + h[1] + '</b><br>' + h[7];
+    }
+    tr.addEventListener('click', pick);
+    tr.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+    tb.appendChild(tr);
+  });
+
+  // ---------------- timeline de exemplo
+  var N = 240, data = [], seed = 7;
+  function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+  for (var i = 0; i < N; i++) {
+    var spike = i > 150 && i < 175, after = i >= 168;
+    var base = after ? 41 : 29;
+    var avg = base + rnd() * 6 + (spike ? 35 + rnd() * 60 : 0);
+    data.push({ avg: avg, min: avg - 2 - rnd() * 3, max: avg + 3 + rnd() * (spike ? 80 : 12), loss: spike ? (rnd() < .6 ? 5 + rnd() * 30 : 0) : (rnd() < .03 ? 3 : 0) });
+  }
+  var routeChange = 168, t0 = 20 * 60, focus = null, cv = document.getElementById('demoTl');
+  function hhmm(idx) { var m = t0 + Math.floor(idx / 2); return String(Math.floor(m / 60) % 24).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); }
+  function drawTl() {
+    var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
+    if (!w) return;
+    cv.width = w * dpr; cv.height = h * dpr;
+    var c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var L = 40, T = 6, B = 18, pw = w - L - 6, ph = h - T - B, scale = 150;
+    function Y(v) { return T + ph - Math.min(1, v / scale) * ph; }
+    c.fillStyle = tok('--sunken'); c.fillRect(0, 0, w, h);
+    c.font = '10px ' + tok('--font-mono'); c.textAlign = 'right'; c.textBaseline = 'middle';
+    for (var k = 0; k <= 3; k++) {
+      var v = scale * k / 3; c.strokeStyle = tok('--line'); c.beginPath(); c.moveTo(L, Y(v) + .5); c.lineTo(L + pw, Y(v) + .5); c.stroke();
+      c.fillStyle = tok('--muted'); c.fillText(Math.round(v) + (k === 3 ? ' ms' : ''), L - 4, Y(v));
+    }
+    var bw = pw / N;
+    data.forEach(function (d, i) {
+      var x = L + i * bw, col = d.avg >= 200 ? tok('--bad') : d.avg >= 100 ? tok('--warn') : tok('--good');
+      c.globalAlpha = .25; c.fillStyle = col; c.fillRect(x, Y(d.max), Math.max(1, bw), Y(d.min) - Y(d.max)); c.globalAlpha = 1;
+      c.fillRect(x, Y(d.avg), Math.max(1, bw), T + ph - Y(d.avg));
+      if (d.loss > 0) { c.fillStyle = tok('--bad'); c.fillRect(x, T, Math.max(1, bw), Math.max(3, Math.min(1, d.loss / 30) * ph)); }
+    });
+    var rx = L + routeChange * bw; c.strokeStyle = tok('--route'); c.setLineDash([3, 3]); c.beginPath(); c.moveTo(rx + .5, T); c.lineTo(rx + .5, T + ph); c.stroke(); c.setLineDash([]);
+    c.fillStyle = tok('--muted'); c.textBaseline = 'top';
+    [0, 60, 120, 180, 239].forEach(function (i, n, arr) { c.textAlign = n === 0 ? 'left' : n === arr.length - 1 ? 'right' : 'center'; c.fillText(hhmm(i), L + i * bw, T + ph + 4); });
+    if (focus) {
+      var a = L + focus[0] * bw, b = L + (focus[1] + 1) * bw;
+      c.fillStyle = 'rgba(0,0,0,.35)'; c.fillRect(L, T, a - L, ph); c.fillRect(b, T, L + pw - b, ph);
+      c.strokeStyle = tok('--warn'); c.strokeRect(a, T, b - a, ph);
+    }
+    cv._g = { L: L, bw: bw };
+  }
+  function idxAt(x) { var g = cv._g; return Math.max(0, Math.min(N - 1, Math.floor((x - g.L) / g.bw))); }
+  function statFor(a, b) {
+    var s = data.slice(a, b + 1), sum = 0, lost = 0, mx = 0;
+    s.forEach(function (d) { sum += d.avg; mx = Math.max(mx, d.max); lost += d.loss; });
+    return { avg: sum / s.length, max: mx, loss: lost / s.length, n: s.length };
+  }
+  var dragFrom = null;
+  function pos(e) { var r = cv.getBoundingClientRect(); return (e.touches ? e.touches[0].clientX : e.clientX) - r.left; }
+  function upd(x) {
+    var a = Math.min(dragFrom, idxAt(x)), b = Math.max(dragFrom, idxAt(x)); focus = [a, b]; drawTl();
+    var st = statFor(a, b), inSpike = b > 150 && a < 175;
+    document.getElementById('tlExplain').innerHTML = '<b>Foco ' + hhmm(a) + ' – ' + hhmm(b + 1) + '</b> · ' + st.n + ' trechos · média ' + br(st.avg) + ' ms · máx ' + br(st.max, 0) + ' ms · perda ' + br(st.loss) + '%<br>' +
+      (inSpike ? 'Aqui está o problema: perda (barras vermelhas no topo) e latência alta perto das 21h. A linha roxa mostra que a rota mudou nesse momento. Depois disso a latência se estabiliza num patamar mais alto (~41 ms).'
+               : (a >= routeChange ? 'Depois da mudança de rota a conexão está estável, mas uns 12 ms mais lenta que antes. A nova rota é mais longa.' : 'Trecho tranquilo: latência em torno de 30 ms e quase sem perda.'));
+  }
+  cv.addEventListener('mousedown', function (e) { dragFrom = idxAt(pos(e)); upd(pos(e)); });
+  cv.addEventListener('mousemove', function (e) { if (dragFrom != null) upd(pos(e)); });
+  window.addEventListener('mouseup', function () { dragFrom = null; });
+  cv.addEventListener('touchstart', function (e) { dragFrom = idxAt(pos(e)); upd(pos(e)); }, { passive: true });
+  cv.addEventListener('touchmove', function (e) { if (dragFrom != null) upd(pos(e)); }, { passive: true });
+  cv.addEventListener('touchend', function () { dragFrom = null; });
+  cv.addEventListener('dblclick', function () { focus = null; drawTl(); document.getElementById('tlExplain').textContent = 'Foco removido. Arraste de novo para selecionar um trecho.'; });
+  window.addEventListener('resize', drawTl);
+  if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', drawTl);
+
+  // ---------------- simulador de alerta
+  var samples = [false, false, true, false, true, true, false, true, true, false];
+  var vals = [62, 71, 188, 80, null, 203, 77, 176, 240, 69];
+  var box = document.getElementById('alertSamples');
+  function renderAlert() {
+    box.innerHTML = '';
+    samples.forEach(function (bad, i) {
+      var b = document.createElement('button'); b.type = 'button';
+      b.className = 'chip ' + (bad ? 'on' : 'ok');
+      b.textContent = bad ? (vals[i] == null ? 'perdida' : vals[i] + ' ms') : '6' + i + ' ms';
+      b.setAttribute('aria-pressed', bad ? 'true' : 'false');
+      b.addEventListener('click', function () { samples[i] = !samples[i]; if (samples[i] && vals[i] != null && vals[i] < 150) vals[i] = 160 + i * 9; renderAlert(); });
+      box.appendChild(b);
+    });
+    var n = samples.filter(Boolean).length, fire = n >= 5;
+    document.getElementById('alertExplain').innerHTML = '<b>' + n + ' de 10</b> amostras acima de 150 ms ou perdidas → ' +
+      (fire ? '<span class="lossbad">o alerta DISPARA</span>. A notificação aparece, o e-mail sai e o PABX entra no resumo “Problemas”.' : '<span class="lat-good">nada acontece</span>. Faltam ' + (5 - n) + ' amostra(s) ruim(ns) para disparar.');
+    document.getElementById('alertMail').textContent = fire
+      ? 'Assunto: Pingger: PABX lento em pabx.empresa.com.br (start)\n\nAlerta PABX lento (start) em pabx.empresa.com.br (10.0.5.20)\nMotivo: ' + n + ' de 10 amostras acima de 150 ms ou perdidas\nLatência média: 147.3 ms\nPerda: 10.0%\nMOS: 3.02'
+      : '(nenhum e-mail enviado)';
+  }
+  renderAlert();
+
+  // ---------------- calculadora de MOS (mesma fórmula do Pingger)
+  function mos(avg, jit, loss) {
+    var eff = avg + jit * 2 + 10;
+    var r = eff < 160 ? 93.2 - eff / 40 : 93.2 - (eff - 120) / 10;
+    r = Math.max(r - loss * 2.5, 0);
+    return Math.max(1, Math.min(4.5, 1 + 0.035 * r + 0.000007 * r * (r - 60) * (100 - r)));
+  }
+  var mLat = document.getElementById('mLat'), mJit = document.getElementById('mJit'), mLoss = document.getElementById('mLoss');
+  function calc() {
+    var a = +mLat.value, j = +mJit.value, l = +mLoss.value, m = mos(a, j, l);
+    document.getElementById('oLat').textContent = a + ' ms';
+    document.getElementById('oJit').textContent = j + ' ms';
+    document.getElementById('oLoss').textContent = br(l) + ' %';
+    document.getElementById('mosVal').textContent = br(m, 2);
+    var v = m >= 4.0 ? ['Ótimo: ligações limpas', '--good'] : m >= 3.5 ? ['Bom: dá para conversar normalmente', '--good'] : m >= 3.0 ? ['Razoável: pode picotar', '--warn'] : m >= 2.5 ? ['Ruim: atrasos e cortes perceptíveis', '--bad'] : ['Péssimo: ligação praticamente inviável', '--bad'];
+    var el = document.getElementById('mosVerdict'); el.textContent = v[0]; el.style.color = 'var(' + v[1] + ')';
+    document.getElementById('mosMark').style.left = ((m - 1) / 3.5 * 100) + '%';
+  }
+  [mLat, mJit, mLoss].forEach(function (x) { x.addEventListener('input', calc); });
+  calc();
+  if (!document.getElementById('timeline').hidden) drawTl();
+})();
+</script>
+
+</html>

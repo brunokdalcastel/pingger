@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pingger</title>
+<link rel="icon" id="favicon" href="data:,">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 18 L7 12 L11 15 L16 6 L22 10" stroke="var(--accent)"/><circle cx="16" cy="6" r="2" fill="var(--accent)"/></svg>
+      Pingger
+    </div>
+    <input id="targetInput" list="recentHosts" placeholder="Alvo: nome ou IP (vários separados por espaço)">
+    <datalist id="recentHosts"></datalist>
+    <select id="configSel" title="Configuração nomeada"></select>
+    <span class="lbl">Intervalo</span>
+    <select id="intervalSel" title="Intervalo entre amostras"></select>
+    <select id="modeSel" title="O que tracear">
+      <option value="full">Rota completa</option>
+      <option value="final">Só destino</option>
+    </select>
+    <button class="primary" id="traceBtn">▶ Tracear</button>
+    <div class="spacer"></div>
+    <span class="lbl">Workspace</span>
+    <select id="wsSel"></select>
+    <button id="fileBtn">Arquivo ▾</button>
+    <button id="toolsBtn">Ferramentas ▾</button>
+  </header>
+  <div id="body">
+    <nav id="nav"></nav>
+    <main id="main"></main>
+  </div>
+</div>
+<div id="toasts"></div>
+<input type="file" id="fileInput" hidden>
+<script src="app.js"></script>
+</body>
+</html>

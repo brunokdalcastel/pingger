@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pingger — entrar</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body style="display:flex;align-items:center;justify-content:center;overflow:auto">
+<form class="card" style="padding:24px;width:min(360px,92vw)" id="f">
+  <h2 style="margin-top:0">Pingger</h2>
+  <p class="sub">Acesso remoto ao painel. Digite a senha configurada no computador que roda o Pingger.</p>
+  <input type="password" id="pw" placeholder="Senha" style="width:100%;margin-bottom:10px" autofocus>
+  <button class="primary" style="width:100%">Entrar</button>
+  <p class="err" id="msg"></p>
+</form>
+<script>
+document.getElementById('f').onsubmit = async e => {
+  e.preventDefault();
+  const r = await fetch('/api/login', {method: 'POST', body: JSON.stringify({password: document.getElementById('pw').value})});
+  if (r.ok) location.href = '/'; else document.getElementById('msg').textContent = 'Senha incorreta (ou acesso remoto sem senha configurada).';
+};
+</script>
+</body>
+</html>
