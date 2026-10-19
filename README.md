@@ -3,6 +3,14 @@
 Ferramenta de diagnóstico de rede por traceroute contínuo, escrita do zero em Python
 (só biblioteca padrão, sem dependências) com interface web local.
 
+## Download (versão portátil)
+
+Baixe o **`Pingger.exe`** na [última release](../../releases/latest) e dê duplo-clique, sem
+instalar nada e sem precisar de Python. Os dados ficam em `PinggerData\`, ao lado do exe
+(se a pasta não aceitar escrita, vão para `%LOCALAPPDATA%\Pingger`). Dá para levar num pendrive.
+
+Para gerar o exe: `.\build.ps1` → `dist\Pingger.exe`.
+
 ## Como abrir
 
 - **Duplo-clique em `Pingger.pyw`**: abre a janela (Edge/Chrome em modo app), sem console.

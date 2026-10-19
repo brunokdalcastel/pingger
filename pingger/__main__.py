@@ -30,12 +30,28 @@ def open_window(url):
     webbrowser.open(url)
 
 
+def default_data_dir():
+    # Exe portátil: dados ao lado do executável, se a pasta aceitar escrita.
+    if getattr(sys, "frozen", False):
+        portable = os.path.join(os.path.dirname(sys.executable), "PinggerData")
+        try:
+            os.makedirs(portable, exist_ok=True)
+            probe = os.path.join(portable, ".write-test")
+            with open(probe, "w"):
+                pass
+            os.remove(probe)
+            return portable
+        except OSError:
+            pass
+    return os.path.join(os.environ.get("LOCALAPPDATA", os.path.expanduser("~")), "Pingger")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="pingger")
     ap.add_argument("--trace", nargs="+", metavar="ALVO", help="alvos para começar a tracear")
     ap.add_argument("--port", type=int)
     ap.add_argument("--bind")
-    ap.add_argument("--data", default=os.path.join(os.environ.get("LOCALAPPDATA", os.path.expanduser("~")), "Pingger"))
+    ap.add_argument("--data", default=default_data_dir())
     ap.add_argument("--no-browser", action="store_true", help="não abrir a janela (modo serviço/agente)")
     a = ap.parse_args(argv)
 
