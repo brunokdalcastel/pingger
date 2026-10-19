@@ -5,6 +5,8 @@ Ferramenta de diagnóstico de rede por traceroute contínuo, escrita do zero em 
 
 ## Download (versão portátil)
 
+[![Baixar Pingger.exe](https://img.shields.io/badge/Baixar-Pingger.exe-2ea44f?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/brunokdalcastel/pingger/releases/latest/download/Pingger.exe)
+
 Baixe o **`Pingger.exe`** na [última release](../../releases/latest) e dê duplo-clique, sem
 instalar nada e sem precisar de Python. Os dados ficam em `PinggerData\`, ao lado do exe
 (se a pasta não aceitar escrita, vão para `%LOCALAPPDATA%\Pingger`). Dá para levar num pendrive.
